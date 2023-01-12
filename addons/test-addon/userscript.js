@@ -1,4 +1,4 @@
-export default async function (addon, global, console, msg) {
+export default async function ({console, msg}) {
 
     console.log("Seperate userscript.json!");
 }

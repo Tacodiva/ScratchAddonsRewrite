@@ -1,7 +1,15 @@
-import { finishRegistration, addons } from './load-addons-global';
-import { AddonManifest } from '../AddonManifest';
-import '../../addons/addons';
+import { AddonManifests } from "../AddonManifest";
 
-finishRegistration();
+export default new Promise<AddonManifests>(resolve => {
 
-export default new Promise<AddonManifest[]>((resolve) => resolve(addons));
+    if (document.saAddonManifests) {
+        document.saAddonManifests.then(resolve);
+    } else {
+        document.addEventListener("sa-addon-manifests", () => {
+            if (!document.saAddonManifests)
+                throw new Error(`Received event but couldn't find addon manifests promise.`);
+            document.saAddonManifests.then(resolve);
+        }, { once: true });
+    }
+
+});

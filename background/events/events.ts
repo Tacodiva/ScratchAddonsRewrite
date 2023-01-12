@@ -1,2 +1,2 @@
-import './messages';
-import './pageload-listener'
+import './pageload-listener';
+import './messages'

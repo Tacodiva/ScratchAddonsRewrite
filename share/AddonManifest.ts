@@ -1,3 +1,5 @@
+export type AddonManifests = readonly AddonManifest[];
+
 export interface AddonManifest {
     readonly id: string;
 

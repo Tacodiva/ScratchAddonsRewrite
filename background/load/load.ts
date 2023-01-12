@@ -1,4 +1,4 @@
-import addons from '../../share/load/load-addons';
+import addons from './load-addons';
 import storage from './load-storage';
 
 import { ScratchAddonsBackground } from '../ScratchAddonsBackground';

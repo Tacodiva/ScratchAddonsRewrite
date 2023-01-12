@@ -1,6 +1,6 @@
-import { AddonManifest } from "../share/AddonManifest";
-import { AddonSetting } from "../share/AddonSetting";
-import { AddonStorage } from "./Storage";
+import { AddonManifest } from "./AddonManifest";
+import { AddonSetting } from "./AddonSetting";
+import { AddonStorage } from "../background/Storage";
 
 export class Addon {
 

@@ -1,12 +1,12 @@
-import { Addon } from './Addon';
-import { AddonManifest } from '../share/AddonManifest';
+import { Addon } from '../share/Addon';
+import { AddonManifests } from '../share/AddonManifest';
 import { Storage } from './Storage';
 
 export class ScratchAddonsBackground {
 
     public readonly addons: { readonly [key: string]: Addon | undefined };
 
-    public constructor(addonManifests: AddonManifest[], storage: Storage) {
+    public constructor(addonManifests: AddonManifests, storage: Storage) {
         let addons: { [key: string]: Addon } = {};
 
         if (!storage.addons) storage.addons = {};

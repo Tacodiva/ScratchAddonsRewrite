@@ -1,32 +1,57 @@
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import typescript from '@rollup/plugin-typescript';
+import virtual from '@rollup/plugin-virtual';
+
 import * as fs from 'fs';
 import * as path from 'path';
 
+const ADDON_MANIFEST_NAME = "addon.ts";
+const BUNDLED_EXTS = [".js", ".ts"];
+
 export default (args) => {
 	const devel = args.config_devel ?? false;
+
+	const addonManifestFiles = [];
+	const addonAssets = [];
+
+	function searchFolder(folder, insideAddon = false) {
+		const subfiles = fs.readdirSync(folder);
+		// Is this an addons folder which has a addon.ts file? Like 'cool-stuff/addon.ts'
+		if (subfiles.find(subfile => path.basename(subfile) === ADDON_MANIFEST_NAME)) {
+			const subfile = path.join(folder, ADDON_MANIFEST_NAME);
+			if (insideAddon)
+				throw new Error(`Unexpected addon manifest file '${subfile}'. Addon's manifest cannot be in another addon's folder.`);
+			addonManifestFiles.push(subfile);
+			insideAddon = true;
+		}
+		subfiles.forEach(subfileName => {
+			const subfile = path.join(folder, subfileName);
+			if (fs.statSync(subfile).isDirectory()) {
+				searchFolder(subfile, insideAddon);
+			} else if (BUNDLED_EXTS.indexOf(path.extname(subfile)) === -1) {
+				if (!insideAddon)
+					throw new Error(`Unexpected asset '${subfile}'. Assets must in an addon's folder.`);
+				addonAssets.push(subfile);
+			} else if (!insideAddon) {
+				addonManifestFiles.push(subfile);
+			}
+		});
+		return insideAddon;
+	}
+	searchFolder("./addons");
+	console.log(`\x1b[1m\x1b[32mPackaging ${addonManifestFiles.length} addons and ${addonAssets.length} assets.\x1b[0m`);
 
 	const assetGenPlugins = [
 		{
 			name: "Emit Addon Assets",
 			generateBundle() {
-				const bundledExts = [".js", ".ts"];
-				const plugin = this;
-				function copyAsset(file) {
-					if (fs.statSync(file).isDirectory())
-						fs.readdirSync(file).forEach(subfile =>
-							copyAsset(path.join(file, subfile))
-						);
-					else if (bundledExts.indexOf(path.extname(file)) === -1) {
-						plugin.emitFile({
-							type: "asset",
-							fileName: file,
-							source: fs.readFileSync(file)
-						});
-					}
-				}
-				copyAsset('addons');
+				for (const asset of addonAssets)
+					plugin.emitFile({
+						type: "asset",
+						fileName: file,
+						source: fs.readFileSync(file)
+					});
 			}
 		},
 
@@ -62,7 +87,7 @@ export default (args) => {
 
 				typescript(
 					{
-						tsconfig: "tsconfig.background.json",
+						tsconfig: "tsconfig.json",
 						sourceMap: devel,
 						inlineSources: devel
 					}
@@ -86,7 +111,39 @@ export default (args) => {
 
 				typescript(
 					{
-						tsconfig: "tsconfig.content.json",
+						tsconfig: "tsconfig.json",
+						sourceMap: devel,
+						inlineSources: devel
+					}
+				),
+			],
+			watch: {
+				clearScreen: false
+			}
+		},
+		{
+			input: 'addons-bundle/index.ts',
+			output: {
+				sourcemap: devel,
+				format: 'iife',
+				name: 'app',
+				file: 'static/addons.js',
+			},
+			plugins: [
+
+				virtual({
+					'sa-addons':
+						addonManifestFiles
+							.flatMap(file => `import ${JSON.stringify(file)};`)
+							.join("\n")
+				}),
+
+				resolve(),
+				commonjs(),
+
+				typescript(
+					{
+						tsconfig: "tsconfig.json",
 						sourceMap: devel,
 						inlineSources: devel
 					}
@@ -97,5 +154,11 @@ export default (args) => {
 				clearScreen: false
 			}
 		},
+		{
+			input: 'webpages',
+			output: {
+				
+			}
+		}
 	];
 };
