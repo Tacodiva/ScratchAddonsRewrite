@@ -1,0 +1,55 @@
+{
+  "manifest_version": 2,
+  "name": "__MSG_extensionName__",
+  "description": "__MSG_extensionDescription__",
+  "version": "2.0.0",
+  "version_name": "2.0.0-prerelease",
+  "default_locale": "en",
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "browser_action": {
+    "default_icon": "images/icon-blue.png",
+    "default_popup": "popup.html",
+    "default_title": "Scratch Addons"
+  },
+  "icons": {
+    "16": "images/icon-blue-16.png",
+    "32": "images/icon-blue-32.png",
+    "1024": "images/icon-blue.png"
+  },
+  "options_ui": {
+    "page": "settings.html",
+    "open_in_tab": true
+  },
+  "homepage_url": "https://scratchaddons.com",
+  "incognito": "spanning",
+  "permissions": [
+    "https://scratch.mit.edu/*",
+    "https://api.scratch.mit.edu/*",
+    "https://clouddata.scratch.mit.edu/*",
+    "cookies",
+    "webRequest",
+    "webRequestBlocking",
+    "declarativeNetRequestWithHostAccess",
+    "storage",
+    "contextMenus",
+    "alarms",
+    "scripting"
+  ],
+  "optional_permissions": ["notifications", "clipboardWrite"],
+  "web_accessible_resources": [
+    "content-scripts/inject/*",
+    "addon-api/*",
+    "addons/*",
+    "libraries/*",
+    "addons-l10n/*/*.json",
+    "images/cs/*"
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "griffpatch@griffpatch.co.uk"
+    }
+  }
+}

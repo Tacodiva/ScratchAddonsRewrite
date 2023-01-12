@@ -1,0 +1,20 @@
+{
+    "include": [
+        "./background/*",
+        "./addon/*",
+        "./share/*",
+        "./configs/chromium/build-constants.ts"
+    ],
+    "compilerOptions": {
+        "rootDir": ".",
+        "outDir": "static/bundle",
+        "target": "es2022",
+        "module": "es2022",
+        "allowJs": true,
+        "strict": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitOverride": true,
+        "skipLibCheck": true
+    }
+}

@@ -1,0 +1,19 @@
+{
+  "scripts": {
+    "build": "rollup -c rollup.config.mjs",
+    "build:firefox": "npm run build -- --config_manifest manifests/mv2.json",
+    "build:chromium": "npm run build -- --config_manifest manifests/mv3.json",
+    "dev": "rollup -c rollup.config.mjs -w",
+    "dev:firefox": "npm run dev -- --config_manifest manifests/mv2.json --config_devel",
+    "dev:chromium": "npm run dev -- --config_manifest manifests/mv3.json --config_devel"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^24.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.1",
+    "@rollup/plugin-typescript": "^10.0.1",
+    "@types/chrome": "^0.0.206",
+    "rollup": "^3.9.1",
+    "tslib": "^2.4.1",
+    "typescript": "^4.9.4"
+  }
+}
