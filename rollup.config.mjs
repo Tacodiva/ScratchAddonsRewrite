@@ -12,7 +12,7 @@ import * as path from 'path';
 const ADDON_MANIFEST_NAME = "addon.ts";
 const BUNDLED_EXTS = [".js", ".ts"];
 
-function fenseDependencies(dirs) {
+function fenceDependencies(dirs) {
 	return {
 		generateBundle(options, bundle) {
 			const resolvedDirs = dirs.flatMap(dir => path.resolve(dir) + '/');
@@ -108,7 +108,7 @@ export default (args) => {
 					}
 				),
 
-				fenseDependencies([
+				fenceDependencies([
 					'./background',
 					'./share'
 				]),
@@ -141,7 +141,7 @@ export default (args) => {
 					}
 				),
 
-				fenseDependencies([
+				fenceDependencies([
 					'./inject',
 					'./share',
 					'./content'
@@ -181,7 +181,7 @@ export default (args) => {
 					}
 				),
 
-				fenseDependencies([
+				fenceDependencies([
 					'./addons',
 					'./addons-exec',
 					'./share',
@@ -219,7 +219,7 @@ export default (args) => {
 				resolve(),
 				commonjs(),
 
-				fenseDependencies([
+				fenceDependencies([
 					'./webpages',
 					'./share',
 					'./content',

@@ -26,13 +26,13 @@ When built, this project produces four bundles, they are:
 And here is a list of the folders and what they contain
 
 - `addons` -> Source bundled into `addons.js`
-- `addons-bundle` -> Source bundled into `addons.js`
+- `addons-exec` -> Source bundled into `addons.js`
 - `background` -> Source bundled into `background.js`
 - `content` -> Source bundled into `addons.js`, `inject.js` and `webpages.js`
 - `inject` -> Source bundled into `inject.js`
 - `manifests` -> not bundled, contains two versions of manifest.json, one for mv2 and one for mv3.
 - `share` -> Source bundled into all bundles
-- `static` -> All the other files needed by the extension. This is also the folder all the bundles put into
+- `static` -> All the other files needed by the extension. This is also the folder all the bundles get built into
 - `webpages` -> Source bundled into `webpages.js`
 
 ### The Addon Manifest Issue
