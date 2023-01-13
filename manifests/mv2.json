@@ -6,12 +6,14 @@
   "version_name": "2.0.0-prerelease",
   "default_locale": "en",
   "background": {
-    "scripts": ["background.js"],
+    "scripts": [
+      "bundles/background.js"
+    ],
     "persistent": false
   },
   "browser_action": {
     "default_icon": "images/icon-blue.png",
-    "default_popup": "popup.html",
+    "default_popup": "webpages/popup.html",
     "default_title": "Scratch Addons"
   },
   "icons": {
@@ -38,7 +40,10 @@
     "alarms",
     "scripting"
   ],
-  "optional_permissions": ["notifications", "clipboardWrite"],
+  "optional_permissions": [
+    "notifications",
+    "clipboardWrite"
+  ],
   "web_accessible_resources": [
     "content-scripts/inject/*",
     "addon-api/*",

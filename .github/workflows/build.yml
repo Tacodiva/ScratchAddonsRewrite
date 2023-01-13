@@ -1,0 +1,34 @@
+# Simple workflow for deploying static content to GitHub Pages
+name: Build Scratch Addons
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3.6.0
+      - name: Install Node.js modules
+        run: npm i
+      - name: Build Chromium 
+        run: npm run build:chromium
+      - name: Upload Chromium
+        uses: actions/upload-artifact@v2
+        with:
+          name: scratch-addons-chromium
+          path: static
+      - name: Build Firefox 
+        run: npm run build:firefox
+      - name: Upload Firefox
+        uses: actions/upload-artifact@v2
+        with:
+          name: scratch-addons-firefox
+          path: static

@@ -6,6 +6,13 @@ export default new Promise<AddonManifests>(resolve => {
     promiseResolver = resolve;
 });
 
-export function resolveAddonManifests(manifests: AddonManifests) {
-    if (promiseResolver) promiseResolver(manifests);
+export function provideAddonManifests(manifests: AddonManifests) {
+    if (promiseResolver) {
+        promiseResolver(manifests);
+        promiseResolver = null;
+    }
+}
+
+export function hasAddonManifests() {
+    return promiseResolver === null;
 }

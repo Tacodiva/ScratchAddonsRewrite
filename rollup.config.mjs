@@ -1,13 +1,33 @@
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
+import terser from '@rollup/plugin-terser';
 import typescript from '@rollup/plugin-typescript';
+import vue from "rollup-plugin-vue";
 import virtual from '@rollup/plugin-virtual';
+import postcss from "rollup-plugin-postcss";
 
 import * as fs from 'fs';
 import * as path from 'path';
 
 const ADDON_MANIFEST_NAME = "addon.ts";
 const BUNDLED_EXTS = [".js", ".ts"];
+
+function fenseDependencies(dirs) {
+	return {
+		generateBundle(options, bundle) {
+			const resolvedDirs = dirs.flatMap(dir => path.resolve(dir) + '/');
+			for (const filePath of Object.keys(bundle)) {
+				const file = bundle[filePath];
+				if (file.type === 'chunk') {
+					for (const module of file.moduleIds) {
+						if (!resolvedDirs.find(dir => module.startsWith(dir)))
+							throw new Error(`Module '${path.relative('.', filePath)}' illegally imports ${path.relative(filePath, module)}.`);
+					}
+				}
+			}
+		}
+	};
+}
 
 export default (args) => {
 	const devel = args.config_devel ?? false;
@@ -46,12 +66,11 @@ export default (args) => {
 		{
 			name: "Emit Addon Assets",
 			generateBundle() {
-				for (const asset of addonAssets)
-					plugin.emitFile({
-						type: "asset",
-						fileName: file,
-						source: fs.readFileSync(file)
-					});
+				for (const asset of addonAssets) {
+					const assetDest = path.join("static", asset);
+					fs.mkdirSync(path.dirname(assetDest), { recursive: true });
+					fs.copyFileSync(asset, assetDest);
+				}
 			}
 		},
 
@@ -63,11 +82,7 @@ export default (args) => {
 					console.warn("Use `npm run build:firefox` to build for firefox, otherwise use `npm run build:chromium`\n\x1b[0m")
 					return;
 				}
-				this.emitFile({
-					type: "asset",
-					fileName: "manifest.json",
-					source: fs.readFileSync(args.config_manifest)
-				});
+				fs.copyFileSync(args.config_manifest, "./static/manifest.json");
 			}
 		}
 	];
@@ -78,8 +93,8 @@ export default (args) => {
 			output: {
 				sourcemap: devel,
 				format: 'iife',
-				name: 'app',
-				file: 'static/background.js',
+				name: 'ScratchAddonsBackground',
+				file: 'static/bundles/background.js',
 			},
 			plugins: [
 				resolve(),
@@ -87,23 +102,32 @@ export default (args) => {
 
 				typescript(
 					{
-						tsconfig: "tsconfig.json",
+						tsconfig: "background/tsconfig.json",
 						sourceMap: devel,
 						inlineSources: devel
 					}
 				),
+
+				fenseDependencies([
+					'./background',
+					'./share'
+				]),
+
+				!devel && terser(),
+
+				...assetGenPlugins
 			],
 			watch: {
 				clearScreen: false
 			}
 		},
 		{
-			input: 'content/index.ts',
+			input: 'inject/index.ts',
 			output: {
 				sourcemap: devel,
 				format: 'iife',
-				name: 'app',
-				file: 'static/content.js',
+				name: 'ScratchAddonsContent',
+				file: 'static/bundles/inject.js',
 			},
 			plugins: [
 				resolve(),
@@ -111,23 +135,31 @@ export default (args) => {
 
 				typescript(
 					{
-						tsconfig: "tsconfig.json",
+						tsconfig: "inject/tsconfig.json",
 						sourceMap: devel,
 						inlineSources: devel
 					}
 				),
+
+				fenseDependencies([
+					'./inject',
+					'./share',
+					'./content'
+				]),
+
+				!devel && terser()
 			],
 			watch: {
 				clearScreen: false
 			}
 		},
 		{
-			input: 'addons-bundle/index.ts',
+			input: 'addons-exec/index.ts',
 			output: {
 				sourcemap: devel,
 				format: 'iife',
-				name: 'app',
-				file: 'static/addons.js',
+				name: 'ScratchAddonsAddons',
+				file: 'static/bundles/addons.js',
 			},
 			plugins: [
 
@@ -143,21 +175,61 @@ export default (args) => {
 
 				typescript(
 					{
-						tsconfig: "tsconfig.json",
+						tsconfig: "addons-exec/tsconfig.json",
 						sourceMap: devel,
 						inlineSources: devel
 					}
 				),
-				...assetGenPlugins
+
+				fenseDependencies([
+					'./addons',
+					'./addons-exec',
+					'./share',
+					'./content'
+				]),
+
+				!devel && terser()
 			],
 			watch: {
 				clearScreen: false
 			}
 		},
 		{
-			input: 'webpages',
+			input: 'webpages/index.ts',
+			external: ['vue'],
 			output: {
-				
+				sourcemap: devel,
+				format: 'iife',
+				name: 'ScratchAddonsWebpages',
+				file: 'static/bundles/webpages.js',
+				globals: { "vue": "Vue" }
+			},
+			plugins: [
+
+				vue({ target: "browser" }),
+				postcss(),
+
+				typescript(
+					{
+						tsconfig: "webpages/tsconfig.json",
+						sourceMap: devel,
+						inlineSources: devel
+					}
+				),
+				resolve(),
+				commonjs(),
+
+				fenseDependencies([
+					'./webpages',
+					'./share',
+					'./content',
+					'./node_modules/style-inject'
+				]),
+
+				!devel && terser()
+			],
+			watch: {
+				clearScreen: false
 			}
 		}
 	];

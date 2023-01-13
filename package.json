@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "build": "rollup -c rollup.config.mjs",
+    "clean": "rimraf static/bundles static/addons static/manifest.json",
+    "build": "npm run clean && rollup -c rollup.config.mjs",
     "build:firefox": "npm run build -- --config_manifest manifests/mv2.json",
     "build:chromium": "npm run build -- --config_manifest manifests/mv3.json",
     "dev": "rollup -c rollup.config.mjs -w",
@@ -8,15 +9,19 @@
     "dev:chromium": "npm run dev -- --config_manifest manifests/mv3.json --config_devel"
   },
   "devDependencies": {
+    "@iconify/vue": "^4.0.2",
     "@rollup/plugin-commonjs": "^24.0.0",
     "@rollup/plugin-node-resolve": "^15.0.1",
+    "@rollup/plugin-terser": "^0.3.0",
     "@rollup/plugin-typescript": "^10.0.1",
     "@rollup/plugin-virtual": "^3.0.1",
     "@types/chrome": "^0.0.206",
+    "rimraf": "^4.0.4",
     "rollup": "^3.9.1",
     "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-vue": "^6.0.0",
     "tslib": "^2.4.1",
-    "typescript": "^4.9.4"
+    "typescript": "^4.9.4",
+    "vue": "^3.2.45"
   }
 }

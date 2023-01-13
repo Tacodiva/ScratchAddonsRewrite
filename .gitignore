@@ -2,8 +2,6 @@
 package-lock.json
 node_modules
 
-static/content.*
-static/background.*
-static/addons.*
 static/manifest.json
 static/addons
+static/bundles

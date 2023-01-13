@@ -26,4 +26,8 @@ export class ScratchAddonsBackground {
 
         console.log("SA Background Ready.");
     }
+
+    public serialize() {
+        return JSON.stringify(this);
+    }
 }

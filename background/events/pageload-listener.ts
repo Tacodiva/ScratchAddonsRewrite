@@ -9,7 +9,7 @@ chrome.tabs.onUpdated.addListener(async (tabId, { status }, { url }) => {
             target: { tabId },
             injectImmediately: true,
             world: "ISOLATED",
-            files: ["content.js", "addons.js"]
+            files: ["inject.js", "addons.js"]
         });
     } else {
         chrome.tabs.executeScript({

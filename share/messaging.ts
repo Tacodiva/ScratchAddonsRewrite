@@ -1,4 +1,4 @@
-import { resolveAddonManifests } from "../background/load/load-addons";
+import { provideAddonManifests } from "../background/load/load-addons";
 import { AddonManifests } from "./AddonManifest";
 
 abstract class MessageType {
@@ -67,20 +67,20 @@ export class MessageChannelType {
         return type;
     }
 
-    public connect(): MessageChannel {
-        return new MessageChannel(false, this, chrome.runtime.connect({ name: this.id }));
+    public connect(): ConnectedMessageChannel {
+        return new ConnectedMessageChannel(false, this, chrome.runtime.connect({ name: this.id }));
     }
 
     public accept() {
         chrome.runtime.onConnect.addListener(port => {
             if (port.name === this.id) {
-                new MessageChannel(true, this, port);
+                new ConnectedMessageChannel(true, this, port);
             }
         });
     }
 }
 
-export class MessageChannel {
+export class ConnectedMessageChannel {
     public readonly isBackgroundSide: boolean;
     public readonly type: MessageChannelType;
     public readonly port: chrome.runtime.Port;
@@ -146,7 +146,8 @@ export class MessageChannel {
 }
 
 export const mainChannelMessages = {
-    init: new MessageTypeRequest<AddonManifests, string>("init", true)
+    handshake: new MessageTypeRequest<undefined, string | null>("handshake", true),
+    handshakeProvideAddons: new MessageTypeRequest<string, string>("handshakeProvideAddons", true)
 };
 
 export const mainChannel = new MessageChannelType("main", Object.values(mainChannelMessages));

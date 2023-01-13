@@ -1,9 +1,16 @@
 import { mainChannelMessages, mainChannel } from '../../share/messaging';
-import { resolveAddonManifests } from '../load/load-addons';
+import SA from '../load/load';
+import { provideAddonManifests, hasAddonManifests } from '../load/load-addons';
 
-mainChannelMessages.init.onReceive = async (addonManifests) => {
-    resolveAddonManifests(addonManifests);
-    return "Lots of love, from the background 0w0";
+mainChannelMessages.handshake.onReceive = async () => {
+    if (hasAddonManifests()) 
+        return (await SA).serialize();
+    return null;
 };
+
+mainChannelMessages.handshakeProvideAddons.onReceive = async (manifestsJSON) => {
+    provideAddonManifests(JSON.parse(manifestsJSON));
+    return (await SA).serialize();
+}
 
 mainChannel.accept();
