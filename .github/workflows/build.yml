@@ -23,11 +23,11 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: scratch-addons-chromium
-          path: static
+          path: build
       - name: Build Firefox 
         run: npm run build:firefox
       - name: Upload Firefox
         uses: actions/upload-artifact@v3
         with:
           name: scratch-addons-firefox
-          path: static
+          path: build

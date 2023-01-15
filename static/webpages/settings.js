@@ -1,0 +1,1 @@
+ScratchAddonWebpages.settings();

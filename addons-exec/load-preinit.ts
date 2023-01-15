@@ -1,4 +1,5 @@
 import { AddonManifest, AddonManifests } from "../share/AddonManifest";
+import { debugLogger, logger } from "./logger";
 
 declare global {
     function registerAddon(arg: AddonManifest): void;
@@ -21,5 +22,6 @@ export function finishRegistration() {
 globalThis.registerAddon = function (arg: AddonManifest) {
     if (isRegistrationFinished)
         throw new Error("registerAddon() called too late! Addon registration has already finished.");
+    debugLogger.log(`Registered addon '${arg.id}'.`);
     addons.push(arg);
 }

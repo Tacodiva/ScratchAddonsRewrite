@@ -1,7 +1,7 @@
-.vscode
-package-lock.json
-node_modules
+/.vscode
+/package-lock.json
+/node_modules
 
-static/manifest.json
-static/addons
-static/bundles
+/manifest.json
+/bundles
+/build

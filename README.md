@@ -30,9 +30,9 @@ And here is a list of the folders and what they contain
 - `background` -> Source bundled into `background.js`
 - `content` -> Source bundled into `addons.js`, `inject.js` and `webpages.js`
 - `inject` -> Source bundled into `inject.js`
-- `manifests` -> not bundled, contains two versions of manifest.json, one for mv2 and one for mv3.
-- `share` -> Source bundled into all bundles
-- `static` -> All the other files needed by the extension. This is also the folder all the bundles get built into
+- `configs` -> not bundled, contains manifest and compile constants for different build configurations.
+- `share` -> Source bundled into all bundles.
+- `static` -> All the other files needed by the extension.
 - `webpages` -> Source bundled into `webpages.js`
 
 ### The Addon Manifest Issue

@@ -6,12 +6,12 @@
     "version_name": "2.0.0-prerelease",
     "default_locale": "en",
     "background": {
-      "service_worker": "background.js"
+      "service_worker": "bundles/background.js"
     },
     "icons": {
-      "16": "images/icon-blue-16.png",
-      "32": "images/icon-blue-32.png",
-      "1024": "images/icon.png"
+      "16": "static/images/icon-blue-16.png",
+      "32": "static/images/icon-blue-32.png",
+      "1024": "static/images/icon.png"
     },
     "host_permissions": [
       "https://scratch.mit.edu/*",
@@ -22,20 +22,17 @@
     "web_accessible_resources": [
       {
         "resources": [
-          "mainworld/*",
-          "images/*",
-          "webpages/Sora.ttf",
-          "chunk.*.js",
-          "addons/**/*.ts"
+          "addons/*",
+          "static/*"
         ],
         "matches": ["https://*.scratch.mit.edu/*"]
       }
     ],
     "action": {
-      "default_popup": "popup.html"
+      "default_popup": "static/webpages/popup.html"
     },
     "options_ui": {
-      "page": "settings.html",
+      "page": "static/webpages/settings.html",
       "open_in_tab": true
     }
   }

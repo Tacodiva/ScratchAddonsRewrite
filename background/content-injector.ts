@@ -1,22 +1,22 @@
-import manifestVersion, { ExtensionManifestVersion } from '../ExtensionManifestVersion';
+import { CurrentManifestVersion, ManifestVersion } from "compile-configs";
 
 chrome.tabs.onUpdated.addListener(async (tabId, { status }, { url }) => {
     if (!url) return;
     if (status !== "loading") return;
 
-    if (manifestVersion === ExtensionManifestVersion.MV3) {
+    if (CurrentManifestVersion === ManifestVersion.MV3) {
         chrome.scripting.executeScript({
             target: { tabId },
             injectImmediately: true,
             world: "ISOLATED",
-            files: ["inject.js", "addons.js"]
+            files: ["bundles/addons.js", "bundles/inject.js"]
         });
     } else {
         chrome.tabs.executeScript({
-            file: "addons.js",
+            file: "bundles/addons.js",
         });
         chrome.tabs.executeScript({
-            file: "content.js",
+            file: "bundles/inject.js",
         });
     }
 });

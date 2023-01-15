@@ -1,2 +1,3 @@
 import './load/load'
-import './events/events'
+import './messaging';
+import './content-injector';

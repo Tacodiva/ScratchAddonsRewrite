@@ -6,12 +6,7 @@ export interface Storage {
 export interface AddonStorage {
 
     id: string,
-    enabled: boolean,
-    settings: { [key: string]: AddonStorageSetting | undefined }
+    enabled: any | undefined,
+    settings: { [id: string]: any | undefined }
 
-}
-
-export interface AddonStorageSetting {
-    id: string,
-    value: any
 }

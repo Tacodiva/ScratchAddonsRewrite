@@ -1,0 +1,38 @@
+{
+    "manifest_version": 3,
+    "name": "__MSG_extensionName__",
+    "description": "__MSG_extensionDescription__",
+    "version": "2.0.0",
+    "version_name": "2.0.0-prerelease",
+    "default_locale": "en",
+    "background": {
+      "service_worker": "bundles/background.js"
+    },
+    "icons": {
+      "16": "static/images/icon-blue-16.png",
+      "32": "static/images/icon-blue-32.png",
+      "1024": "static/images/icon.png"
+    },
+    "host_permissions": [
+      "https://scratch.mit.edu/*",
+      "https://api.scratch.mit.edu/*",
+      "https://clouddata.scratch.mit.edu/*"
+    ],
+    "permissions": ["storage", "scripting", "cookies", "contextMenus", "alarms"],
+    "web_accessible_resources": [
+      {
+        "resources": [
+          "addons/*",
+          "static/*"
+        ],
+        "matches": ["https://*.scratch.mit.edu/*"]
+      }
+    ],
+    "action": {
+      "default_popup": "static/webpages/popup.html"
+    },
+    "options_ui": {
+      "page": "static/webpages/settings.html",
+      "open_in_tab": true
+    }
+  }

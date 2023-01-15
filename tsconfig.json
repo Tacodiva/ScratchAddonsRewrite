@@ -1,4 +1,7 @@
 {
+    "exclude": [
+        "configs"
+    ],
     "compilerOptions": {
         "rootDir": ".",
         "outDir": "static",

@@ -1,7 +1,4 @@
-import { provideAddonManifests } from "../background/load/load-addons";
-import { AddonManifests } from "./AddonManifest";
-
-abstract class MessageType {
+export abstract class MessageType {
     public readonly id: string;
     public readonly backgroundbound: boolean;
 
@@ -12,37 +9,39 @@ abstract class MessageType {
         this.backgroundbound = backgroundbound;
     }
 
-    public abstract receive(content: any): Promise<{ id: "response", content: any }> | null;
+    public abstract receive(content: any, channel: ConnectedMessageChannel): Promise<{ id: "response", content: any }> | null;
 }
 
 export class MessageTypeNotify<TMsg> extends MessageType {
-    public readonly receiver: (msg: TMsg) => void;
-
-    public constructor(id: string, backgroundbound: boolean, receiver: (msg: TMsg) => void) {
-        super(id, backgroundbound);
-        this.receiver = receiver;
-    }
-
-    public override receive(content: any): null {
-        this.receiver(content)
-        return null;
-    }
-}
-
-export class MessageTypeRequest<TMsg, TRes> extends MessageType {
-    public onReceive: ((msg: TMsg) => Promise<TRes>) | null;
+    public onReceive: ((msg: TMsg, channel: ConnectedMessageChannel) => void) | null;
 
     public constructor(id: string, backgroundbound: boolean) {
         super(id, backgroundbound);
         this.onReceive = null;
     }
 
-    public async receive(content: any): Promise<{ id: "response"; content: any; }> {
+    public override receive(content: any, channel: ConnectedMessageChannel): null {
+        if (!this.onReceive)
+            throw new Error("No onReceive method set for message ${this.id}.");
+        this.onReceive(content, channel)
+        return null;
+    }
+}
+
+export class MessageTypeRequest<TMsg, TRes> extends MessageType {
+    public onReceive: ((msg: TMsg, channel: ConnectedMessageChannel) => Promise<TRes>) | null;
+
+    public constructor(id: string, backgroundbound: boolean) {
+        super(id, backgroundbound);
+        this.onReceive = null;
+    }
+
+    public async receive(content: any, channel: ConnectedMessageChannel): Promise<{ id: "response"; content: any; }> {
         if (!this.onReceive)
             throw new Error(`No onReceive method set for message ${this.id}.`);
         return {
             id: "response",
-            content: await this.onReceive(content)
+            content: await this.onReceive(content, channel)
         }
     }
 }
@@ -56,6 +55,7 @@ export class MessageChannelType {
         let typeMap = Object.create(null);
         for (const type of types) {
             if (type.id === "request") throw new Error("Message id 'request' is reserved.");
+            if (typeMap[type.id]) throw new Error(`Already registered a message with id '${type.id}'.`);
             typeMap[type.id] = type;
         }
         this.typeMap = typeMap;
@@ -71,10 +71,16 @@ export class MessageChannelType {
         return new ConnectedMessageChannel(false, this, chrome.runtime.connect({ name: this.id }));
     }
 
-    public accept() {
+    public accept(onConnect?: (channel: ConnectedMessageChannel) => void, onDisconnect?: (channel: ConnectedMessageChannel) => void) {
         chrome.runtime.onConnect.addListener(port => {
             if (port.name === this.id) {
-                new ConnectedMessageChannel(true, this, port);
+                const connection = new ConnectedMessageChannel(true, this, port);
+                if (onConnect) onConnect(connection);
+                if (onDisconnect) {
+                    connection.port.onDisconnect.addListener(() => {
+                        onDisconnect(connection);
+                    });
+                }
             }
         });
     }
@@ -105,7 +111,7 @@ export class ConnectedMessageChannel {
             this.requests[message.request](message.content);
             this.requests[message.request] = undefined!;
         } else {
-            const response = this.type.getMessageType(message.id).receive(message.content);
+            const response = this.type.getMessageType(message.id).receive(message.content, this);
             if (response) response.then((responseObj: any) => {
                 responseObj.request = message.request;
                 this.port.postMessage(responseObj);
@@ -144,10 +150,3 @@ export class ConnectedMessageChannel {
         });
     }
 }
-
-export const mainChannelMessages = {
-    handshake: new MessageTypeRequest<undefined, string | null>("handshake", true),
-    handshakeProvideAddons: new MessageTypeRequest<string, string>("handshakeProvideAddons", true)
-};
-
-export const mainChannel = new MessageChannelType("main", Object.values(mainChannelMessages));

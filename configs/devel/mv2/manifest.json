@@ -12,17 +12,17 @@
     "persistent": false
   },
   "browser_action": {
-    "default_icon": "images/icon-blue.png",
-    "default_popup": "webpages/popup.html",
+    "default_icon": "static/images/icon-blue.png",
+    "default_popup": "static/webpages/popup.html",
     "default_title": "Scratch Addons"
   },
   "icons": {
-    "16": "images/icon-blue-16.png",
-    "32": "images/icon-blue-32.png",
-    "1024": "images/icon-blue.png"
+    "16": "static/images/icon-blue-16.png",
+    "32": "static/images/icon-blue-32.png",
+    "1024": "static/images/icon-blue.png"
   },
   "options_ui": {
-    "page": "settings.html",
+    "page": "static/webpages/settings.html",
     "open_in_tab": true
   },
   "homepage_url": "https://scratchaddons.com",
@@ -45,12 +45,8 @@
     "clipboardWrite"
   ],
   "web_accessible_resources": [
-    "content-scripts/inject/*",
-    "addon-api/*",
     "addons/*",
-    "libraries/*",
-    "addons-l10n/*/*.json",
-    "images/cs/*"
+    "static/*"
   ],
   "browser_specific_settings": {
     "gecko": {
